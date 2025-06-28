@@ -13,7 +13,7 @@ spec:
     spec:
       containers:
         - name: personal-site
-          image: ghcr.io/danielpower/personal-site:main@sha256:e13b0a444e2508b2979e1c08e41b263497324755fb555e35b895d79341afa749
+          image: ghcr.io/danielpower/personal-site:main@sha256:89faae6d74d5c47bc6442167677dfaa5921eb2357b6d94182b985dc94d150cfa
           imagePullPolicy: Always
           env:
             - name: NODE_NAME
