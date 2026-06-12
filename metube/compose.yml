@@ -1,0 +1,23 @@
+services:
+  metube_mv:
+    image: ghcr.io/alexta69/metube
+    container_name: metube_mv
+    restart: unless-stopped
+    ports:
+      - "8081:8081"
+    volumes:
+      - /nas/main/media/music_videos:/downloads
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.mtmv.rule=Host(`mtmv.bit.vet`)"
+      - "traefik.http.routers.mtmv.entrypoints=websecure"
+      - "traefik.http.routers.mtmv.tls.certresolver=bitvet"
+    networks:
+      - proxy
+    environment:
+      MAX_CONCURRENT_DOWNLOADS: 100
+      OUTPUT_TEMPLATE: "%(title)s [%(id)s].%(ext)s"
+      YTDL_OPTIONS: '{"writeinfojson":true}'
+networks:
+  proxy:
+    external: true

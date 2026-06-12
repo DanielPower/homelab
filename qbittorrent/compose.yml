@@ -1,0 +1,49 @@
+services:
+    vpn:
+        image: qmcgaw/gluetun:latest
+        container_name: vpn
+        cap_add:
+            - NET_ADMIN
+        devices:
+            - /dev/net/tun:/dev/net/tun
+        volumes:
+            - ./gluetun:/gluetun
+        environment:
+            - VPN_SERVICE_PROVIDER=private internet access
+            - OPENVPN_USER=${OPENVPN_USER}
+            - OPENVPN_PASSWORD=${OPENVPN_PASSWORD}
+            - PORT_FORWARD_ONLY=true
+            - SERVER_REGIONS=CA Toronto
+            - VPN_PORT_FORWARDING=on
+            - VPN_PORT_FORWARDING_STATUS_FILE=/gluetun/forwarded_port
+            - FIREWALL_INPUT_PORTS=8085
+        labels:
+            - "traefik.enable=true"
+            - "traefik.docker.network=proxy"
+            - "traefik.http.routers.qbittorrent.rule=Host(`qbittorrent.bit.vet`)"
+            - "traefik.http.routers.qbittorrent.entrypoints=websecure"
+            - "traefik.http.routers.qbittorrent.tls.certresolver=bitvet"
+            - "traefik.http.services.qbittorrent.loadbalancer.server.port=8085"
+        networks:
+            - proxy
+        restart: unless-stopped
+
+    qbittorrent:
+        image: lscr.io/linuxserver/qbittorrent:latest
+        container_name: qbittorrent
+        network_mode: "service:vpn"
+        depends_on:
+            - vpn
+        environment:
+            - PUID=1000
+            - PGID=1000
+            - TZ=Etc/UTC
+            - WEBUI_PORT=8085
+        volumes:
+            - ./qbittorrent/config:/config
+            - /nas/main/media/downloads/qbittorrent:/downloads
+        restart: unless-stopped
+
+networks:
+    proxy:
+        external: true

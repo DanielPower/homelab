@@ -1,0 +1,16 @@
+services:
+    rainbot-sands:
+        image: ghcr.io/rainbow-sands/rainbot-sands:main
+        container_name: "rainbot-sands"
+        volumes:
+            - /nas/fast/lab/rainbot-sands:/data
+        environment:
+            TZ: "America/St_Johns"
+            DATABASE_URL: "/data/db.sqlite"
+            MEDIA_PATH: "/data/media"
+            DISCORD_TOKEN: ${DISCORD_TOKEN}
+            DISCORD_APPLICATION_ID: ${DISCORD_APPLICATION_ID}
+            DISCORD_CHANNEL_ID: ${DISCORD_CHANNEL_ID}
+            SCHEDULE: "30 15 * * 0"
+            QUEST_SCHEDULE: "30 14 * * 0"
+        restart: unless-stopped

@@ -1,0 +1,30 @@
+services:
+    traefik:
+        image: traefik:v3.4
+        container_name: traefik
+        restart: unless-stopped
+        command:
+            - "--log.level=DEBUG"
+        environment:
+            PORKBUN_SECRET_API_KEY: ${PORKBUN_SECRET_API_KEY}
+            PORKBUN_API_KEY: ${PORKBUN_API_KEY}
+        labels:
+            - "traefik.enable=true"
+            - "traefik.http.routers.traefik.rule=Host(`traefik.bit.vet`)"
+            - "traefik.http.routers.traefik.entrypoints=websecure"
+            - "traefik.http.routers.traefik.tls.certresolver=bitvet"
+            - "traefik.http.routers.traefik.service=api@internal"
+        ports:
+            - "80:80"
+            - "443:443"
+            - "8080:8080"
+        volumes:
+            - /var/run/docker.sock:/var/run/docker.sock
+            - /lab/letsencrypt:/letsencrypt
+            - ./traefik.yml:/etc/traefik/traefik.yml
+            - ./dynamic:/dynamic
+        networks:
+            - proxy
+networks:
+    proxy:
+        external: true

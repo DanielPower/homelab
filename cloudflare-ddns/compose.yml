@@ -1,0 +1,10 @@
+services:
+  cloudflare-ddns:
+    image: favonia/cloudflare-ddns:latest
+    network_mode: host
+    restart: always
+    read_only: true
+    cap_drop: [all]
+    environment:
+      - CLOUDFLARE_API_TOKEN=${CLOUDFLARE_API_TOKEN}
+      - DOMAINS=*.danielpower.ca,danielpower.ca,*.replay.observer,replay.observer,*.osu.observer,osu.observer

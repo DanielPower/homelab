@@ -1,0 +1,60 @@
+services:
+    sonarr:
+        image: linuxserver/sonarr
+        container_name: sonarr
+        restart: unless-stopped
+        volumes:
+            - ./sonarr/config:/config
+            - /nas/main/media/shows:/data/shows
+            - /nas/main/media/downloads/qbittorrent:/downloads
+        networks:
+            - proxy
+        labels:
+            - "traefik.enable=true"
+            - "traefik.http.routers.sonarr.rule=Host(`sonarr.bit.vet`)"
+            - "traefik.http.routers.sonarr.entrypoints=websecure"
+            - "traefik.http.routers.sonarr.tls.certresolver=bitvet"
+    radarr:
+        image: linuxserver/radarr
+        container_name: radarr
+        restart: unless-stopped
+        volumes:
+            - ./radarr/config:/config
+            - /nas/main/media/movies:/data/movies
+            - /nas/main/media/downloads/qbittorrent:/downloads
+        networks:
+            - proxy
+        labels:
+            - "traefik.enable=true"
+            - "traefik.http.routers.radarr.rule=Host(`radarr.bit.vet`)"
+            - "traefik.http.routers.radarr.entrypoints=websecure"
+            - "traefik.http.routers.radarr.tls.certresolver=bitvet"
+    prowlarr:
+        image: linuxserver/prowlarr
+        container_name: prowlarr
+        restart: unless-stopped
+        volumes:
+            - ./prowlarr/config:/config
+        networks:
+            - proxy
+        labels:
+            - "traefik.enable=true"
+            - "traefik.http.routers.prowlarr.rule=Host(`prowlarr.bit.vet`)"
+            - "traefik.http.routers.prowlarr.entrypoints=websecure"
+            - "traefik.http.routers.prowlarr.tls.certresolver=bitvet"
+    flaresolverr:
+        image: ghcr.io/flaresolverr/flaresolverr:latest
+        container_name: flaresolverr
+        environment:
+            - LOG_LEVEL=info
+            - LOG_HTML=false
+            - CAPTCHA_SOLVER=none
+            - TZ=Europe/London
+        networks:
+            - proxy
+        ports:
+            - "8191:8191"
+        restart: unless-stopped
+networks:
+    proxy:
+        external: true

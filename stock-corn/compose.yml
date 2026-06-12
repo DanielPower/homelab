@@ -1,0 +1,24 @@
+services:
+    stock-corn:
+        image: ghcr.io/danielpower/stock-corn:master
+        environment:
+            DATABASE_PATH: /data/db.sqlite
+            DISCORD_TOKEN: ${DISCORD_TOKEN}
+            DISCORD_APPLICATION_ID: ${DISCORD_APPLICATION_ID}
+            CORN_CZAR_ID: ${CORN_CZAR_ID}
+        expose:
+            - 3000
+        labels:
+            - "traefik.enable=true"
+            - "traefik.http.routers.stock-corn.rule=Host(`corn.danielpower.ca`)"
+            - "traefik.http.routers.stock-corn.entrypoints=websecure"
+            - "traefik.http.routers.stock-corn.tls.certresolver=danielpowerca"
+        volumes:
+            - /nas/fast/lab/stock-corn:/data
+        networks:
+            - proxy
+        restart: unless-stopped
+
+networks:
+    proxy:
+        external: true

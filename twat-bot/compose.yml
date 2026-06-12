@@ -1,0 +1,6 @@
+services:
+    twat-bot:
+        image: ghcr.io/danielpower/twat-bot:main
+        environment:
+            DISCORD_TOKEN: ${DISCORD_TOKEN}
+        restart: unless-stopped

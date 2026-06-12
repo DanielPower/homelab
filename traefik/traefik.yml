@@ -1,0 +1,49 @@
+log:
+  level: DEBUG
+  format: common
+api:
+  dashboard: true
+  insecure: true
+entryPoints:
+  web:
+    address: ":80"
+    http:
+      redirections:
+        entryPoint:
+          to: websecure
+          scheme: https
+          permanent: true
+  websecure:
+    address: ":443"
+    transport:
+      respondingTimeouts:
+        readTimeout: "0s"
+providers:
+  docker:
+    exposedByDefault: false
+    network: proxy
+  file:
+    directory: /dynamic
+    watch: true
+certificatesResolvers:
+  danielpowerca:
+    acme:
+      email: me@danielpower.ca
+      storage: /letsencrypt/acme.json
+      tlsChallenge: true
+  bitvet:
+    acme:
+      email: me@danielpower.ca
+      storage: /letsencrypt/bitvet-acme.json
+      dnsChallenge:
+        provider: porkbun
+  replayobserver:
+    acme:
+      email: me@danielpower.ca
+      storage: /letsencrypt/replayobserver-acme.json
+      tlsChallenge: true
+  osuobserver:
+    acme:
+      email: me@danielpower.ca
+      storage: /letsencrypt/osuobserver-acme.json
+      tlsChallenge: true
