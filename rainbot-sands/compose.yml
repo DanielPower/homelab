@@ -1,16 +1,160 @@
+name: libby
+
 services:
-    rainbot-sands:
-        image: ghcr.io/rainbow-sands/rainbot-sands:main
-        container_name: "rainbot-sands"
-        volumes:
-            - /nas/fast/lab/rainbot-sands:/data
-        environment:
-            TZ: "America/St_Johns"
-            DATABASE_URL: "/data/db.sqlite"
-            MEDIA_PATH: "/data/media"
-            DISCORD_TOKEN: ${DISCORD_TOKEN}
-            DISCORD_APPLICATION_ID: ${DISCORD_APPLICATION_ID}
-            DISCORD_CHANNEL_ID: ${DISCORD_CHANNEL_ID}
-            SCHEDULE: "30 15 * * 0"
-            QUEST_SCHEDULE: "30 14 * * 0"
-        restart: unless-stopped
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - /nas/fast/lab/libby/db:/var/lib/postgresql/data
+    ports:
+      - "8085:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+  temporal:
+    image: temporalio/auto-setup:latest
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DB: postgres12
+      DB_PORT: 5432
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PWD: ${POSTGRES_PASSWORD}
+      POSTGRES_SEEDS: postgres
+    ports:
+      - "7233:7233"
+  temporal-ui:
+    image: temporalio/ui:latest
+    depends_on:
+      - temporal
+    environment:
+      TEMPORAL_ADDRESS: temporal:7233
+    ports:
+      - "8084:8080"
+    networks:
+      - default
+      - proxy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.libby-temporal.rule=Host(`libby-temporal.bit.vet`)"
+      - "traefik.http.routers.libby-temporal.entrypoints=websecure"
+      - "traefik.http.routers.libby-temporal.tls.certresolver=bitvet"
+  temporal-setup:
+    image: temporalio/admin-tools:latest
+    depends_on:
+      - temporal
+    entrypoint:
+      - /bin/sh
+      - -ec
+      - |
+        until temporal operator cluster health --address temporal:7233 >/dev/null 2>&1; do
+          echo "Waiting for Temporal..."
+          sleep 2
+        done
+        temporal operator namespace create --address temporal:7233 rainbot >/dev/null 2>&1 || true
+        temporal operator search-attribute create --address temporal:7233 --namespace rainbot --name GuildId --type Keyword >/dev/null 2>&1 || true
+        temporal operator search-attribute create --address temporal:7233 --namespace rainbot --name ChannelId --type Keyword >/dev/null 2>&1 || true
+        temporal operator search-attribute create --address temporal:7233 --namespace rainbot --name SegmentCount --type Int >/dev/null 2>&1 || true
+        echo "Temporal setup complete."
+    restart: "no"
+  db-migrate:
+    image: ghcr.io/rainbow-sands/libby/db:main
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
+    restart: "no"
+  discord:
+    image: ghcr.io/rainbow-sands/libby/discord:main
+    depends_on:
+      temporal-setup:
+        condition: service_completed_successfully
+      db-migrate:
+        condition: service_completed_successfully
+    environment:
+      DISCORD_TOKEN: ${DISCORD_TOKEN}
+      DISCORD_APPLICATION_ID: ${DISCORD_APPLICATION_ID}
+      MEDIA_PATH: /media
+      TEMPORAL_URL: temporal:7233
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
+    volumes:
+      - media:/media
+    restart: unless-stopped
+  temporal-worker:
+    image: ghcr.io/rainbow-sands/libby/temporal:main
+    depends_on:
+      temporal-setup:
+        condition: service_completed_successfully
+      db-migrate:
+        condition: service_completed_successfully
+    environment:
+      TEMPORAL_URL: temporal:7233
+      SUMMARIZATION_PROVIDER: anthropic
+      SUMMARIZATION_API_KEY: ${SUMMARIZATION_API_KEY}
+      SUMMARIZATION_MODEL: claude-sonnet-5
+      TRANSCRIPTION_URL: http://whisper-server:8080/inference
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
+      DISCORD_TOKEN: ${DISCORD_TOKEN}
+      MEDIA_PATH: /media
+      WEB_URL: "https://libby.bot"
+    volumes:
+      - media:/media
+    networks:
+      - default
+    restart: unless-stopped
+  whisper-server:
+    image: ghcr.io/ggml-org/whisper.cpp:main-vulkan
+    command: ["whisper-server -m /models/ggml-large-v3.bin --host 0.0.0.0 --port 8080 -t 8 --no-fallback --convert --vad --vad-model /models/ggml-silero-v6.2.0-ggml.bin --vad-threshold 0.60 --vad-min-speech-duration-ms 250 --vad-min-silence-duration-ms 300 --vad-max-speech-duration-s 20 --speech-pad-ms 100 --vad-samples-overlap 0.10 --suppress-nst"]
+    restart: unless-stopped
+    ports: 
+      - "9294:8080"
+    devices:
+      - /dev/dri:/dev/dri
+    group_add:
+      - "992"
+    volumes:
+      - ./models:/models
+    networks:
+      - default
+  web:
+    image: ghcr.io/rainbow-sands/libby/web:main
+    depends_on:
+      db-migrate:
+        condition: service_completed_successfully
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
+      DISCORD_APPLICATION_ID: ${DISCORD_APPLICATION_ID}
+      DISCORD_CLIENT_SECRET: ${DISCORD_CLIENT_SECRET}
+      CHAT_PROVIDER: anthropic
+      CHAT_API_KEY: ${CHAT_API_KEY}
+      CHAT_MODEL: claude-haiku-4-5
+      SESSION_SECRET: ${SESSION_SECRET}
+      TEMPORAL_URL: temporal:7233
+      MEDIA_PATH: /media
+    volumes:
+      - media:/media
+    ports:
+      - "3000:3000"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.libby-web.rule=Host(`libby.bot`)"
+      - "traefik.http.routers.libby-web.entrypoints=websecure"
+      - "traefik.http.routers.libby-web.tls.certresolver=libby_bot"
+      - "traefik.http.routers.libby-web.middlewares=compression@file"
+    networks:
+      - default
+      - proxy
+    restart: unless-stopped
+
+volumes:
+  media:
+networks:
+  proxy:
+    external: true
