@@ -22,7 +22,7 @@ services:
             - "traefik.docker.network=proxy"
             - "traefik.http.routers.qbittorrent.rule=Host(`qbittorrent.bit.vet`)"
             - "traefik.http.routers.qbittorrent.entrypoints=websecure"
-            - "traefik.http.routers.qbittorrent.tls.certresolver=bitvet"
+            - "traefik.http.routers.qbittorrent.tls.certresolver=porkbun"
             - "traefik.http.services.qbittorrent.loadbalancer.server.port=8085"
         networks:
             - proxy

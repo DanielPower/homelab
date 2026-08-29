@@ -7,4 +7,4 @@ services:
     cap_drop: [all]
     environment:
       - CLOUDFLARE_API_TOKEN=${CLOUDFLARE_API_TOKEN}
-      - DOMAINS=*.danielpower.ca,danielpower.ca,*.replay.observer,replay.observer,*.osu.observer,osu.observer
+      - DOMAINS=crispy.coffee,*.crispy.coffee

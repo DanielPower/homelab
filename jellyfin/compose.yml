@@ -35,9 +35,9 @@ services:
         read_only: true
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.jellyfin.rule=Host(`jellyfin.danielpower.ca`)"
+      - "traefik.http.routers.jellyfin.rule=Host(`jellyfin.crispy.coffee`)"
       - "traefik.http.routers.jellyfin.entrypoints=websecure"
-      - "traefik.http.routers.jellyfin.tls.certresolver=danielpowerca"
+      - "traefik.http.routers.jellyfin.tls.certresolver=tls"
     networks:
       - proxy
     restart: always

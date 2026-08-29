@@ -10,9 +10,9 @@ services:
             - 3000
         labels:
             - "traefik.enable=true"
-            - "traefik.http.routers.stock-corn.rule=Host(`corn.danielpower.ca`)"
+            - "traefik.http.routers.stock-corn.rule=Host(`corn.crispy.coffee`)"
             - "traefik.http.routers.stock-corn.entrypoints=websecure"
-            - "traefik.http.routers.stock-corn.tls.certresolver=danielpowerca"
+            - "traefik.http.routers.stock-corn.tls.certresolver=tls"
         volumes:
             - /nas/fast/lab/stock-corn:/data
         networks:

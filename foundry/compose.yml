@@ -1,0 +1,24 @@
+services:
+  foundry:
+    image: ghcr.io/felddy/foundryvtt:14
+    volumes:
+      - ./data:/data
+    environment:
+      - FOUNDRY_USERNAME=CrispyUmbrella
+      - FOUNDRY_PASSWORD=ngh7ZAX_enz-ehb@xzw
+      - FOUNDRY_LICENSE_KEY=EBNQ-CNVS-A30K-7F0C-XSUY-LYAX
+      - FOUNDRY_ADMIN_KEY=cheese
+      - FOUNDRY_TELEMETRY=true
+      - FOUNDRY_HOSTNAME=rainbowsands.quest
+      - FOUNDRY_PROXY_SSL=true
+      - FOUNDRY_PROXY_PORT=443
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.foundry.rule=Host(`rainbowsands.quest`)"
+      - "traefik.http.routers.foundry.entrypoints=websecure"
+      - "traefik.http.routers.foundry.tls.certresolver=cloudflare"
+    networks:
+      - proxy
+networks:
+  proxy:
+    external: true

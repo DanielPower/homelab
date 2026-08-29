@@ -1,18 +1,19 @@
 services:
     broker:
-        image: docker.io/library/redis:8
-        restart: unless-stopped
-        volumes:
-            - /nas/fast/lab/paperless/data:/data
+      image: docker.io/valkey/valkey:9-alpine
+      restart: unless-stopped
+      volumes:
+        - /nas/fast/lab/paperless/redisdata:/data
     db:
-        image: docker.io/library/postgres:17
-        restart: unless-stopped
-        volumes:
-            - /nas/fast/lab/paperless/pgdata:/var/lib/postgresql/data
-        environment:
-            POSTGRES_DB: ${POSTGRES_DB}
-            POSTGRES_USER: ${POSTGRES_USER}
-            POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      image: docker.io/library/postgres:18
+      restart: unless-stopped
+      volumes:
+        - /nas/fast/lab/paperless/pgdata:/var/lib/postgresql
+      environment:
+        PGDATA: /var/lib/postgresql/data
+        POSTGRES_DB: ${POSTGRES_DB}
+        POSTGRES_USER: ${POSTGRES_USER}
+        POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     webserver:
         image: ghcr.io/paperless-ngx/paperless-ngx:latest
         restart: unless-stopped
@@ -33,7 +34,7 @@ services:
             - "traefik.docker.network=proxy"
             - "traefik.http.routers.paperless.rule=Host(`paperless.bit.vet`)"
             - "traefik.http.routers.paperless.entrypoints=websecure"
-            - "traefik.http.routers.paperless.tls.certresolver=bitvet"
+            - "traefik.http.routers.paperless.tls.certresolver=porkbun"
         networks:
             - proxy
             - default
@@ -58,7 +59,6 @@ services:
     tika:
         image: docker.io/apache/tika:latest
         restart: unless-stopped
-
 networks:
     proxy:
         external: true

@@ -3,16 +3,15 @@ services:
         image: traefik:v3.4
         container_name: traefik
         restart: unless-stopped
-        command:
-            - "--log.level=DEBUG"
         environment:
             PORKBUN_SECRET_API_KEY: ${PORKBUN_SECRET_API_KEY}
             PORKBUN_API_KEY: ${PORKBUN_API_KEY}
+            CF_DNS_API_TOKEN: ${CF_DNS_API_TOKEN}
         labels:
             - "traefik.enable=true"
             - "traefik.http.routers.traefik.rule=Host(`traefik.bit.vet`)"
             - "traefik.http.routers.traefik.entrypoints=websecure"
-            - "traefik.http.routers.traefik.tls.certresolver=bitvet"
+            - "traefik.http.routers.traefik.tls.certresolver=porkbun"
             - "traefik.http.routers.traefik.service=api@internal"
         ports:
             - "80:80"

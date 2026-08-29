@@ -1,6 +1,3 @@
-log:
-  level: DEBUG
-  format: common
 api:
   dashboard: true
   insecure: true
@@ -26,24 +23,20 @@ providers:
     directory: /dynamic
     watch: true
 certificatesResolvers:
-  danielpowerca:
+  tls:
     acme:
       email: me@danielpower.ca
       storage: /letsencrypt/acme.json
       tlsChallenge: true
-  bitvet:
+  porkbun:
     acme:
       email: me@danielpower.ca
-      storage: /letsencrypt/bitvet-acme.json
+      storage: /letsencrypt/acme.json
       dnsChallenge:
         provider: porkbun
-  replayobserver:
+  cloudflare:
     acme:
       email: me@danielpower.ca
-      storage: /letsencrypt/replayobserver-acme.json
-      tlsChallenge: true
-  osuobserver:
-    acme:
-      email: me@danielpower.ca
-      storage: /letsencrypt/osuobserver-acme.json
-      tlsChallenge: true
+      storage: /letsencrypt/acme.json
+      dnschallenge:
+        provider: cloudflare

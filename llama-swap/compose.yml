@@ -1,0 +1,25 @@
+services:
+    llama-swap:
+        image: ghcr.io/mostlygeek/llama-swap:unified-vulkan
+        container_name: llama-swap
+        restart: unless-stopped
+        command: ["--config", "/app/config.yaml", "--listen", "0.0.0.0:8080"]
+        ports:
+            - "9292:8080"
+        devices:
+            - /dev/dri:/dev/dri
+        group_add:
+            - "992"
+        volumes:
+            - ./config.yaml:/app/config.yaml
+            - ./models:/models
+        labels:
+            - "traefik.enable=true"
+            - "traefik.http.routers.llm.rule=Host(`llm.bit.vet`)"
+            - "traefik.http.routers.llm.entrypoints=websecure"
+            - "traefik.http.routers.llm.tls.certresolver=porkbun"
+        networks:
+            - proxy
+networks:
+    proxy:
+        external: true

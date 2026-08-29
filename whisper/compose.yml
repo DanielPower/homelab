@@ -1,0 +1,18 @@
+services:
+  whisper-server:
+    image: ghcr.io/ggml-org/whisper.cpp:main-vulkan
+    command:
+      - whisper-server -m /models/ggml-large-v3.bin --host 0.0.0.0 --port 8080 -t 8 --no-fallback --convert --vad --vad-model /models/ggml-silero-v6.2.0.bin --vad-threshold 0.60 --vad-min-speech-duration-ms 250 --vad-min-silence-duration-ms 300 --vad-max-speech-duration-s 20 --vad-samples-overlap 0.10 --suppress-nst
+    restart: unless-stopped
+    ports:
+      - "9000:8080"
+    devices:
+      - /dev/dri:/dev/dri
+    group_add:
+      - "992"
+    volumes:
+      - ./models:/models
+    networks:
+      - default
+
+

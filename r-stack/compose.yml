@@ -13,7 +13,7 @@ services:
             - "traefik.enable=true"
             - "traefik.http.routers.sonarr.rule=Host(`sonarr.bit.vet`)"
             - "traefik.http.routers.sonarr.entrypoints=websecure"
-            - "traefik.http.routers.sonarr.tls.certresolver=bitvet"
+            - "traefik.http.routers.sonarr.tls.certresolver=porkbun"
     radarr:
         image: linuxserver/radarr
         container_name: radarr
@@ -28,7 +28,7 @@ services:
             - "traefik.enable=true"
             - "traefik.http.routers.radarr.rule=Host(`radarr.bit.vet`)"
             - "traefik.http.routers.radarr.entrypoints=websecure"
-            - "traefik.http.routers.radarr.tls.certresolver=bitvet"
+            - "traefik.http.routers.radarr.tls.certresolver=porkbun"
     prowlarr:
         image: linuxserver/prowlarr
         container_name: prowlarr
@@ -41,7 +41,7 @@ services:
             - "traefik.enable=true"
             - "traefik.http.routers.prowlarr.rule=Host(`prowlarr.bit.vet`)"
             - "traefik.http.routers.prowlarr.entrypoints=websecure"
-            - "traefik.http.routers.prowlarr.tls.certresolver=bitvet"
+            - "traefik.http.routers.prowlarr.tls.certresolver=porkbun"
     flaresolverr:
         image: ghcr.io/flaresolverr/flaresolverr:latest
         container_name: flaresolverr

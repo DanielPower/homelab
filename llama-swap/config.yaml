@@ -1,0 +1,58 @@
+healthCheckTimeout: 300
+
+models:
+  qwen3.8-27b:
+    cmd: |
+      llama-server
+      --port ${PORT}
+      --host 0.0.0.0
+      --model /models/Qwen3.8-27B-UD-Q4_K_XL.gguf
+      --ctx-size 131072
+      --n-gpu-layers 999
+      --flash-attn on
+    ttl: 600
+  qwen3.6-35b-a3b:
+    cmd: |
+      llama-server
+      --port ${PORT}
+      --host 0.0.0.0
+      --model /models/Qwen3.6-35B-A3B-UD-Q4_K_XL.gguf
+      --ctx-size 32768
+      --n-gpu-layers 999
+      --flash-attn on
+    ttl: 600
+  qwen3.8-125b-a6b:
+    cmd: |
+      llama-server
+      --port ${PORT}
+      --host 0.0.0.0
+      --model /models/Qwen3.8-Flash-Next-UD-IQ4_XS-00001-of-00003.gguf
+      --n-gpu-layers 999
+      --flash-attn on
+    ttl: 600
+  whisper-v3-large:
+    cmd: |
+      whisper-server
+      --port ${PORT}
+      --host 0.0.0.0
+      --model /models/ggml-large-v3.bin
+      --convert
+      --vad
+      --vad-model /models/ggml-silero-v6.2.0.bin
+      --vad-threshold 0.60
+      --vad-min-speech-duration-ms 250
+      --vad-min-silence-duration-ms 300
+      --vad-max-speech-duration-s 20
+      --vad-samples-overlap 0.10
+      --suppress-nst
+    ttl: 600
+groups:
+  "always-on":
+    persistent: true
+    swap: false
+    exclusive: false
+    members:
+      # - "qwen3.8-27b"
+      # - "qwen3.6-35b-a3b"
+      - "qwen3.8-125b-a6b"
+      - "whisper-v3-large"
