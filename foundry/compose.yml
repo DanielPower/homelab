@@ -4,10 +4,10 @@ services:
     volumes:
       - ./data:/data
     environment:
-      - FOUNDRY_USERNAME=CrispyUmbrella
-      - FOUNDRY_PASSWORD=ngh7ZAX_enz-ehb@xzw
-      - FOUNDRY_LICENSE_KEY=EBNQ-CNVS-A30K-7F0C-XSUY-LYAX
-      - FOUNDRY_ADMIN_KEY=cheese
+      - FOUNDRY_USERNAME=${FOUNDRY_USERNAME}
+      - FOUNDRY_PASSWORD=${FOUNDRY_PASSWORD}
+      - FOUNDRY_LICENSE_KEY=${FOUNDRY_LICENSE_KEY}
+      - FOUNDRY_ADMIN_KEY=${FOUNDRY_ADMIN_KEY}
       - FOUNDRY_TELEMETRY=true
       - FOUNDRY_HOSTNAME=rainbowsands.quest
       - FOUNDRY_PROXY_SSL=true
