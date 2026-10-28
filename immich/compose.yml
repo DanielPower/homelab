@@ -4,7 +4,7 @@ services:
     container_name: immich_server
     image: ghcr.io/immich-app/immich-server:${IMMICH_VERSION:-release}
     volumes:
-      - ${UPLOAD_LOCATION}:/usr/src/app/upload
+      - upload:/usr/src/app/upload
       - /etc/localtime:/etc/localtime:ro
     env_file:
       - .env
@@ -52,11 +52,18 @@ services:
       POSTGRES_DB: ${DB_DATABASE_NAME}
       POSTGRES_INITDB_ARGS: "--data-checksums"
     volumes:
-      - ${DB_DATA_LOCATION}:/var/lib/postgresql/data
+      - pgdata:/var/lib/postgresql/data
     restart: always
 
 volumes:
   model-cache:
+  # Local NVMe on purpose: keep Postgres off NFS.
+  pgdata:
+  upload:
+    driver_opts:
+      type: "nfs"
+      device: ":/main/media/photos/immich_upload"
+      o: "addr=192.168.0.60,vers=4,rw"
 
 networks:
   proxy:

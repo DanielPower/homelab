@@ -42,8 +42,15 @@ services:
             - WEBUI_PORT=8085
         volumes:
             - ./qbittorrent/config:/config
-            - /nas/main/media/downloads/qbittorrent:/downloads
+            - downloads:/downloads
         restart: unless-stopped
+
+volumes:
+    downloads:
+        driver_opts:
+            type: "nfs"
+            device: ":/main/media/downloads/qbittorrent"
+            o: "addr=192.168.0.60,vers=4,rw"
 
 networks:
     proxy:

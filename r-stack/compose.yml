@@ -5,8 +5,8 @@ services:
         restart: unless-stopped
         volumes:
             - ./sonarr/config:/config
-            - /nas/main/media/shows:/data/shows
-            - /nas/main/media/downloads/qbittorrent:/downloads
+            - shows:/data/shows
+            - downloads:/downloads
         networks:
             - proxy
         labels:
@@ -20,8 +20,8 @@ services:
         restart: unless-stopped
         volumes:
             - ./radarr/config:/config
-            - /nas/main/media/movies:/data/movies
-            - /nas/main/media/downloads/qbittorrent:/downloads
+            - movies:/data/movies
+            - downloads:/downloads
         networks:
             - proxy
         labels:
@@ -55,6 +55,22 @@ services:
         ports:
             - "8191:8191"
         restart: unless-stopped
+volumes:
+    shows:
+        driver_opts:
+            type: "nfs"
+            device: ":/main/media/shows"
+            o: "addr=192.168.0.60,vers=4,rw"
+    movies:
+        driver_opts:
+            type: "nfs"
+            device: ":/main/media/movies"
+            o: "addr=192.168.0.60,vers=4,rw"
+    downloads:
+        driver_opts:
+            type: "nfs"
+            device: ":/main/media/downloads/qbittorrent"
+            o: "addr=192.168.0.60,vers=4,rw"
 networks:
     proxy:
         external: true

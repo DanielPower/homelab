@@ -3,7 +3,7 @@ services:
       image: docker.io/valkey/valkey:9-alpine
       restart: unless-stopped
       volumes:
-        - /nas/fast/lab/paperless/redisdata:/data
+        - redisdata:/data
     webserver:
         image: ghcr.io/paperless-ngx/paperless-ngx:latest
         restart: unless-stopped
@@ -14,10 +14,10 @@ services:
         ports:
             - "8000:8000"
         volumes:
-            - /nas/fast/lab/paperless/data:/usr/src/paperless/data
-            - /nas/main/lab/paperless/media:/usr/src/paperless/media
-            - /nas/main/lab/paperless/export:/usr/src/paperless/export
-            - /nas/main/lab/paperless/consume:/usr/src/paperless/consume
+            - data:/usr/src/paperless/data
+            - media:/usr/src/paperless/media
+            - export:/usr/src/paperless/export
+            - consume:/usr/src/paperless/consume
         labels:
             - "traefik.enable=true"
             - "traefik.docker.network=proxy"
@@ -52,6 +52,28 @@ services:
     tika:
         image: docker.io/apache/tika:latest
         restart: unless-stopped
+volumes:
+    redisdata:
+    data:
+        driver_opts:
+            type: "nfs"
+            device: ":/fast/lab/paperless/data"
+            o: "addr=192.168.0.60,vers=4,rw"
+    media:
+        driver_opts:
+            type: "nfs"
+            device: ":/main/lab/paperless/media"
+            o: "addr=192.168.0.60,vers=4,rw"
+    export:
+        driver_opts:
+            type: "nfs"
+            device: ":/main/lab/paperless/export"
+            o: "addr=192.168.0.60,vers=4,rw"
+    consume:
+        driver_opts:
+            type: "nfs"
+            device: ":/main/lab/paperless/consume"
+            o: "addr=192.168.0.60,vers=4,rw"
 networks:
     proxy:
         external: true

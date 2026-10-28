@@ -9,28 +9,28 @@ services:
       - ./config:/config
       - ./cache:/cache
       - /dev/dri/renderD128:/dev/dri/renderD128
-      - type: bind
-        source: /nas/main/media/movies
+      - type: volume
+        source: movies
         target: /data/movies
         read_only: true
-      - type: bind
-        source: /nas/main/media/shows
+      - type: volume
+        source: shows
         target: /data/shows
         read_only: true
-      - type: bind
-        source: /nas/main/media/music
+      - type: volume
+        source: music
         target: /data/music
         read_only: true
-      - type: bind
-        source: /nas/main/media/youtube
+      - type: volume
+        source: youtube
         target: /data/youtube
         read_only: true
-      - type: bind
-        source: /nas/main/media/books
+      - type: volume
+        source: books
         target: /data/books
         read_only: true
-      - type: bind
-        source: /nas/main/media/music_videos
+      - type: volume
+        source: music_videos
         target: /data/music_videos
         read_only: true
     labels:
@@ -42,6 +42,37 @@ services:
       - proxy
     restart: always
 
+volumes:
+  movies:
+    driver_opts:
+      type: "nfs"
+      device: ":/main/media/movies"
+      o: "addr=192.168.0.60,vers=4,ro"
+  shows:
+    driver_opts:
+      type: "nfs"
+      device: ":/main/media/shows"
+      o: "addr=192.168.0.60,vers=4,ro"
+  music:
+    driver_opts:
+      type: "nfs"
+      device: ":/main/media/music"
+      o: "addr=192.168.0.60,vers=4,ro"
+  youtube:
+    driver_opts:
+      type: "nfs"
+      device: ":/main/media/youtube"
+      o: "addr=192.168.0.60,vers=4,ro"
+  books:
+    driver_opts:
+      type: "nfs"
+      device: ":/main/media/books"
+      o: "addr=192.168.0.60,vers=4,ro"
+  music_videos:
+    driver_opts:
+      type: "nfs"
+      device: ":/main/media/music_videos"
+      o: "addr=192.168.0.60,vers=4,ro"
 networks:
   proxy:
     external: true

@@ -1,7 +1,23 @@
 volumes:
+  # Local NVMe on purpose: keep MariaDB off NFS.
   mysql_data:
   romm_resources:
   romm_redis_data:
+  library:
+    driver_opts:
+      type: "nfs"
+      device: ":/main/romm/library"
+      o: "addr=192.168.0.60,vers=4,rw"
+  assets:
+    driver_opts:
+      type: "nfs"
+      device: ":/main/romm/assets"
+      o: "addr=192.168.0.60,vers=4,rw"
+  config:
+    driver_opts:
+      type: "nfs"
+      device: ":/main/romm/config"
+      o: "addr=192.168.0.60,vers=4,rw"
 services:
   romm:
     image: rommapp/romm:latest
@@ -21,9 +37,9 @@ services:
     volumes:
       - romm_resources:/romm/resources # Resources fetched from IGDB (covers, screenshots, etc.)
       - romm_redis_data:/redis-data # Cached data for background tasks
-      - /nas/main/romm/library:/romm/library # Your game library. Check https://github.com/rommapp/romm?tab=readme-ov-file#folder-structure for more details.
-      - /nas/main/romm/assets:/romm/assets # Uploaded saves, states, etc.
-      - /nas/main/romm/config:/romm/config # Path where config.yml is stored
+      - library:/romm/library # Your game library. Check https://github.com/rommapp/romm?tab=readme-ov-file#folder-structure for more details.
+      - assets:/romm/assets # Uploaded saves, states, etc.
+      - config:/romm/config # Path where config.yml is stored
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.romm.rule=Host(`romm.crispy.coffee`)"
@@ -47,7 +63,7 @@ services:
       - MARIADB_USER=romm-user
       - MARIADB_PASSWORD=${MARIADB_PASSWORD}
     volumes:
-      - /nas/fast/lab/romm/mysql:/var/lib/mysql
+      - mysql_data:/var/lib/mysql
     healthcheck:
       test: [CMD, healthcheck.sh, --connect, --innodb_initialized]
       start_period: 30s
