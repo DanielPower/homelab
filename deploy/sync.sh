@@ -4,7 +4,7 @@
 # refs/deploy/last, so a failed deploy is retried on the next run.
 set -euo pipefail
 
-REMOTE_URL=https://github.com/danielpower/homelab.git
+REMOTE_URL=https://github.com/DanielPower/homelab.git
 BRANCH=master
 DEPLOY_REF=refs/deploy/last
 
