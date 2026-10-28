@@ -31,11 +31,15 @@ models:
       --flash-attn on
     ttl: 600
   whisper-v3-large:
+    proxy: http://127.0.0.1:${PORT}
+    checkEndpoint: /v1/audio/transcriptions/
     cmd: |
       whisper-server
       --port ${PORT}
       --host 0.0.0.0
       --model /models/ggml-large-v3.bin
+      --request-path /v1/audio/transcriptions
+      --inference-path ""
       --convert
       --vad
       --vad-model /models/ggml-silero-v6.2.0.bin
@@ -45,6 +49,7 @@ models:
       --vad-max-speech-duration-s 20
       --vad-samples-overlap 0.10
       --suppress-nst
+      --no-language-probabilities
     ttl: 600
 groups:
   "always-on":

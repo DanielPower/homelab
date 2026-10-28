@@ -7,4 +7,4 @@ services:
     cap_drop: [all]
     environment:
       - CLOUDFLARE_API_TOKEN=${CLOUDFLARE_API_TOKEN}
-      - DOMAINS=crispy.coffee,*.crispy.coffee
+      - DOMAINS=crispy.coffee,*.crispy.coffee,danielpower.ca,*.danielpower.ca,osu.observer,*.osu.observer,libby.bot,*.libby.bot,rainbowsands.quest,*.rainbowsands.quest,jiwajiwa.app,*.jiwajiwa.app

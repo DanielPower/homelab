@@ -1,0 +1,33 @@
+services:
+  app:
+    image: ghcr.io/danielpower/osu-observer:main
+    container_name: app
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.osuobserver.rule=Host(`osu.observer`)"
+      - "traefik.http.routers.osuobserver.entrypoints=websecure"
+      - "traefik.http.routers.osuobserver.tls.certresolver=cloudflareResolver"
+      - "traefik.http.routers.osuobserver.middlewares=compression@file"
+    restart: unless-stopped
+    networks:
+      - proxy
+    environment:
+      OSU_CLIENT_ID: ${OSU_CLIENT_ID}
+      OSU_CLIENT_SECRET: ${OSU_CLIENT_SECRET}
+      SAVE_MEDIA_PATH: "/media"
+      MEDIA_BASE_URL: https://osu-observer.tor1.cdn.digitaloceanspaces.com
+      S3_ENDPOINT: https://tor1.digitaloceanspaces.com
+      S3_REGION: us-east-1
+      S3_BUCKET: osu-observer
+      S3_ACCESS_KEY_ID: ${S3_ACCESS_KEY_ID}
+      S3_SECRET_ACCESS_KEY: ${S3_SECRET_ACCESS_KEY}
+      S3_FORCE_PATH_STYLE: false
+      RUN_MIGRATIONS: "true"
+      DATABASE_URL: ${DATABASE_URL}
+      SERVE_MEDIA_PATH: "https://assets.osu.observer"
+      COOKIE_SECRET: ${COOKIE_SECRET}
+      AUTH_REDIRECT_URI: "https://osu.observer/api/auth/callback"
+      FRONTEND_URL: "https://osu.observer"
+networks:
+  proxy:
+    external: true

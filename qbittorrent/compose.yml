@@ -16,6 +16,7 @@ services:
             - SERVER_REGIONS=CA Toronto
             - VPN_PORT_FORWARDING=on
             - VPN_PORT_FORWARDING_STATUS_FILE=/gluetun/forwarded_port
+            - VPN_PORT_FORWARDING_UP_COMMAND=/bin/sh /gluetun/update-qbittorrent-port.sh {{PORTS}}
             - FIREWALL_INPUT_PORTS=8085
         labels:
             - "traefik.enable=true"

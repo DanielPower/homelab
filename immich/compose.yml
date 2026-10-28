@@ -18,9 +18,9 @@ services:
       disable: false
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.photos.rule=Host(`photos.bit.vet`)"
+      - "traefik.http.routers.photos.rule=Host(`photos.crispy.coffee`)"
       - "traefik.http.routers.photos.entrypoints=websecure"
-      - "traefik.http.routers.photos.tls.certresolver=porkbun"
+      - "traefik.http.routers.photos.tls.certresolver=tls"
     networks:
       - default
       - proxy

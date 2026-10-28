@@ -1,0 +1,24 @@
+services:
+  stairs:
+    image: ghcr.io/danielpower/gumpjam3/server:main
+    environment:
+      DATABASE_PATH: /data/scores.db
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.stairs.rule=Host(`trip.crispy.coffee`)"
+      - "traefik.http.routers.stairs.entrypoints=websecure"
+      - "traefik.http.routers.stairs.tls.certresolver=tls"
+    volumes:
+      - data:/data
+    networks:
+      - proxy
+    restart: unless-stopped
+networks:
+  proxy:
+    external: true
+volumes:
+  data:
+    driver_opts:
+      type: "nfs"
+      device: ":/fast/lab/stairs"
+      o: "addr=192.168.0.60,vers=4,rw"

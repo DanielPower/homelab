@@ -1,0 +1,109 @@
+name: libby
+services:
+  db-migrate:
+    image: ghcr.io/rainbow-sands/libby/db:main
+    environment:
+      DATABASE_URL: ${DATABASE_URL}
+    restart: "no"
+  discord:
+    image: ghcr.io/rainbow-sands/libby/discord:main
+    depends_on:
+      db-migrate:
+        condition: service_completed_successfully
+    environment:
+      DISCORD_TOKEN: ${DISCORD_TOKEN}
+      DISCORD_APPLICATION_ID: ${DISCORD_APPLICATION_ID}
+      DATABASE_URL: ${DATABASE_URL}
+      S3_ENDPOINT: ${S3_ENDPOINT}
+      S3_REGION: ${S3_REGION}
+      S3_BUCKET_AUDIO: ${S3_BUCKET_AUDIO}
+      S3_BUCKET_ARTIFACT: ${S3_BUCKET_ARTIFACT}
+      S3_ACCESS_KEY_ID: ${S3_ACCESS_KEY_ID}
+      S3_SECRET_ACCESS_KEY: ${S3_SECRET_ACCESS_KEY}
+      S3_FORCE_PATH_STYLE: ${S3_FORCE_PATH_STYLE}
+      WEB_URL: ${ORIGIN}
+    restart: unless-stopped
+  worker:
+    image: ghcr.io/rainbow-sands/libby/worker:main
+    depends_on:
+      db-migrate:
+        condition: service_completed_successfully
+    environment:
+      TRANSCRIPTION_URL: ${TRANSCRIPTION_URL}
+      DISCORD_TOKEN: ${DISCORD_TOKEN}
+      WEB_URL: ${ORIGIN}
+      TRANSCRIPTION_MODEL: ${TRANSCRIPTION_MODEL}
+      SUMMARIZATION_PROVIDER: ${SUMMARIZATION_PROVIDER}
+      SUMMARIZATION_API_KEY: ${SUMMARIZATION_API_KEY}
+      SUMMARIZATION_BASE_URL: ${SUMMARIZATION_BASE_URL}
+      SUMMARIZATION_MODEL: ${SUMMARIZATION_MODEL}
+      SUMMARIZATION_REASONING_EFFORT: ${SUMMARIZATION_REASONING_EFFORT}
+      SUMMARIZATION_THINKING_BUDGET: ${SUMMARIZATION_THINKING_BUDGET}
+      TRANSCRIPTION_CONCURRENCY: ${TRANSCRIPTION_CONCURRENCY}
+      PROCESSING_CONCURRENCY: ${PROCESSING_CONCURRENCY}
+      PROCESSING_MAX_ATTEMPTS: ${PROCESSING_MAX_ATTEMPTS}
+      DATABASE_URL: ${DATABASE_URL}
+      S3_ENDPOINT: ${S3_ENDPOINT}
+      S3_REGION: ${S3_REGION}
+      S3_BUCKET_AUDIO: ${S3_BUCKET_AUDIO}
+      S3_BUCKET_ARTIFACT: ${S3_BUCKET_ARTIFACT}
+      S3_ACCESS_KEY_ID: ${S3_ACCESS_KEY_ID}
+      S3_SECRET_ACCESS_KEY: ${S3_SECRET_ACCESS_KEY}
+      S3_FORCE_PATH_STYLE: ${S3_FORCE_PATH_STYLE}
+    restart: unless-stopped
+  web:
+    image: ghcr.io/rainbow-sands/libby/web:main
+    depends_on:
+      db-migrate:
+        condition: service_completed_successfully
+    environment:
+      DATABASE_URL: ${DATABASE_URL}
+      DISCORD_APPLICATION_ID: ${DISCORD_APPLICATION_ID}
+      DISCORD_CLIENT_SECRET: ${DISCORD_CLIENT_SECRET}
+      SESSION_SECRET: ${SESSION_SECRET}
+      ORIGIN: ${ORIGIN}
+      CHAT_PROVIDER: ${CHAT_PROVIDER}
+      CHAT_API_KEY: ${CHAT_API_KEY}
+      CHAT_BASE_URL: ${CHAT_BASE_URL}
+      CHAT_MODEL: ${CHAT_MODEL}
+      CHAT_REASONING_EFFORT: ${CHAT_REASONING_EFFORT}
+      CHAT_THINKING_BUDGET: ${CHAT_THINKING_BUDGET}
+      S3_ENDPOINT: ${S3_ENDPOINT}
+      S3_REGION: ${S3_REGION}
+      S3_BUCKET_AUDIO: ${S3_BUCKET_AUDIO}
+      S3_BUCKET_ARTIFACT: ${S3_BUCKET_ARTIFACT}
+      S3_ACCESS_KEY_ID: ${S3_ACCESS_KEY_ID}
+      S3_SECRET_ACCESS_KEY: ${S3_SECRET_ACCESS_KEY}
+      S3_FORCE_PATH_STYLE: ${S3_FORCE_PATH_STYLE}
+      BODY_SIZE_LIMIT: ${BODY_SIZE_LIMIT:-10G}
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.libby-web.rule=Host(`libby.bot`)"
+      - "traefik.http.routers.libby-web.entrypoints=websecure"
+      - "traefik.http.routers.libby-web.tls.certresolver=cloudflare"
+      - "traefik.http.routers.libby-web.middlewares=compression@file"
+    networks:
+      - default
+      - proxy
+    restart: unless-stopped
+  pg-boss-dashboard:
+    image: node:24
+    ports:
+      - 3000
+    working_dir: /app
+    command: sh -c "npm install -g @pg-boss/dashboard@1.10.0 && pg-boss-dashboard"
+    environment:
+      DATABASE_URL: ${DATABASE_URL}&uselibpqcompat=true
+      PGBOSS_SCHEMA: pgboss
+    networks:
+      - default
+      - proxy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.libby-pgboss.rule=Host(`libby-pgboss.bit.vet`)"
+      - "traefik.http.routers.libby-pgboss.entrypoints=websecure"
+      - "traefik.http.routers.libby-pgboss.tls.certresolver=porkbun"
+      - "traefik.http.routers.libby-pgboss.middlewares=compression@file"
+networks:
+  proxy:
+    external: true
