@@ -1,6 +1,6 @@
 services:
   stairs:
-    image: ghcr.io/danielpower/gumpjam3/server:main
+    image: ghcr.io/danielpower/gumpjam3/server:main@sha256:9c31a2c7c035b8a0cf1263aff00a6b37ce068d86da77389ab29f28be542ba8d0
     environment:
       DATABASE_PATH: /data/scores.db
     labels:

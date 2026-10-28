@@ -1,0 +1,38 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:recommended", "docker:pinDigests"],
+  "ignorePaths": ["observer/**"],
+  "packageRules": [
+    {
+      "description": "linuxserver tags look like 4.0.19.2979-ls320",
+      "matchDatasources": ["docker"],
+      "matchPackageNames": [
+        "docker.io/linuxserver/sonarr",
+        "docker.io/linuxserver/radarr",
+        "docker.io/linuxserver/prowlarr"
+      ],
+      "versioning": "regex:^(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)\\.(?<build>\\d+)-ls(?<revision>\\d+)$"
+    },
+    {
+      "description": "qbittorrent tags look like 5.3.0_v2.1.2-ls485",
+      "matchDatasources": ["docker"],
+      "matchPackageNames": ["lscr.io/linuxserver/qbittorrent"],
+      "versioning": "regex:^(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)_v\\d+\\.\\d+\\.\\d+-ls(?<build>\\d+)$"
+    },
+    {
+      "description": "llama-swap publishes dated builds like unified-vulkan-2026-10-01",
+      "matchDatasources": ["docker"],
+      "matchPackageNames": ["ghcr.io/mostlygeek/llama-swap"],
+      "versioning": "regex:^unified-vulkan-(?<major>\\d{4})-(?<minor>\\d{2})-(?<patch>\\d{2})$"
+    },
+    {
+      "description": "immich server and machine-learning must stay on the same version",
+      "matchPackageNames": ["ghcr.io/immich-app/immich-*"],
+      "groupName": "immich"
+    },
+    {
+      "matchPackageNames": ["ghcr.io/rainbow-sands/libby/*"],
+      "groupName": "libby"
+    }
+  ]
+}

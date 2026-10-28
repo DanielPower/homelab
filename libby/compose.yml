@@ -1,7 +1,7 @@
 name: libby
 services:
   db-migrate:
-    image: ghcr.io/rainbow-sands/libby/db:main
+    image: ghcr.io/rainbow-sands/libby/db:main@sha256:057e004784e4c93b536e49e1b35325a7f758bfbf15cbd4c8bab4dd6a4c2bfd6d
     environment:
       DATABASE_URL: ${DATABASE_URL}
     networks:
@@ -9,7 +9,7 @@ services:
       - db
     restart: "no"
   discord:
-    image: ghcr.io/rainbow-sands/libby/discord:main
+    image: ghcr.io/rainbow-sands/libby/discord:main@sha256:8603c5aff64ba7016f0b9bcaf5af2efde076edd4b222dfc01ef7aa41e41e9ffc
     depends_on:
       db-migrate:
         condition: service_completed_successfully
@@ -30,7 +30,7 @@ services:
       - db
     restart: unless-stopped
   worker:
-    image: ghcr.io/rainbow-sands/libby/worker:main
+    image: ghcr.io/rainbow-sands/libby/worker:main@sha256:449cdd469678f0ff86eb99f28fa81256007f794a3ce4065076481ce51d69579f
     depends_on:
       db-migrate:
         condition: service_completed_successfully
@@ -61,7 +61,7 @@ services:
       - db
     restart: unless-stopped
   web:
-    image: ghcr.io/rainbow-sands/libby/web:main
+    image: ghcr.io/rainbow-sands/libby/web:main@sha256:7680176315db4b569759b75ea0fb7033e35bc1cb10a0ea73869b429f1f5fa2c1
     depends_on:
       db-migrate:
         condition: service_completed_successfully
@@ -97,7 +97,7 @@ services:
       - db
     restart: unless-stopped
   pg-boss-dashboard:
-    image: node:24
+    image: docker.io/library/node:24.22.1@sha256:6449e19d8184d84062525b6a7524def03146c2cb04a7f08b076680d0e8e4240a
     ports:
       - 3000
     working_dir: /app

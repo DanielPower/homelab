@@ -1,11 +1,11 @@
 services:
     broker:
-      image: docker.io/valkey/valkey:9-alpine
+      image: docker.io/valkey/valkey:9.1.1-alpine@sha256:ee91f7a174ac4d6a6b0685b3a60e321f0a9dbbb691f9b0e285be2ba1d1be8328
       restart: unless-stopped
       volumes:
         - redisdata:/data
     webserver:
-        image: ghcr.io/paperless-ngx/paperless-ngx:latest
+        image: ghcr.io/paperless-ngx/paperless-ngx:3.0.5@sha256:65a4cabf0169ea7fbd90ab7bb28ba3f8b5909613635acda1a03ad606f34b456b
         restart: unless-stopped
         depends_on:
             - broker
@@ -41,7 +41,7 @@ services:
             PAPERLESS_SECRET_KEY: ${PAPERLESS_SECRET_KEY}
             PAPERLESS_TIME_ZONE: "America/St_Johns"
     gotenberg:
-        image: docker.io/gotenberg/gotenberg:8.20
+        image: docker.io/gotenberg/gotenberg:8.20.1@sha256:cda4386c7ed38f18bc6897828be01ba7361c99929a5c84ec5e293d7916e29bac
         restart: unless-stopped
         # The gotenberg chromium route is used to convert .eml files. We do not
         # want to allow external content like tracking pixels or even javascript.
@@ -50,7 +50,7 @@ services:
             - "--chromium-disable-javascript=true"
             - "--chromium-allow-list=file:///tmp/.*"
     tika:
-        image: docker.io/apache/tika:latest
+        image: docker.io/apache/tika:3.3.1.0@sha256:90b7fa1dc018434075fce9e1d9b88b1e3d0ea6979d0cf86e116c79a8073ae973
         restart: unless-stopped
 volumes:
     redisdata:

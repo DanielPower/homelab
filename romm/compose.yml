@@ -20,7 +20,7 @@ volumes:
       o: "addr=192.168.0.60,vers=4,rw"
 services:
   romm:
-    image: rommapp/romm:latest
+    image: docker.io/rommapp/romm:5.2.0@sha256:3512f2ca455782f90247271bed23116e6bc675bc74e379be2c41696e607ab11e
     container_name: romm
     restart: unless-stopped
     environment:
@@ -54,7 +54,7 @@ services:
         condition: service_healthy
         restart: true
   romm-db:
-    image: mariadb:latest
+    image: docker.io/library/mariadb:12.3.2@sha256:a02fe89cb597d4375812b2eac90cf9d0775d4686daa7f7cc750ebbcad7525bbc
     container_name: romm-db
     restart: unless-stopped
     environment:
