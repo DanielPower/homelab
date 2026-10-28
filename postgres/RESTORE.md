@@ -21,10 +21,10 @@ Other targets:
 - A specific backup: `--set=20261028-004607F`.
 
 ## Restore just one database
-Restore into a throwaway stack so production keeps running, then `pg_dump` the database you need and `pg_restore` it into production. Use a separate project name (`-p pgrestore`), give its postgres service another `container_name`, and point it at the same repo with the same env.
+Use `./restore-db.sh <database> ["<target time>"]`. The whole-cluster restore above rolls back every app. This script restores one database alongside the live one and leaves production running. See README.md for how to swap the copy in.
 
 ## Restore drill (yearly)
-Do the steps above in a throwaway project. Check that row counts and the newest rows look right, then `down -v`.
+Run `./restore-db.sh <db>` for each app database. Check that row counts and the newest rows match the live database, then drop the `_restored_` copies.
 
 ## Rebuild from Backblaze (the QNAP is gone)
 Download the `postgres-backup` folder from Backblaze to local disk. Mount it at `/backups` in place of the NFS volume, for example with a `compose.override.yml`. Then run the restore above.
