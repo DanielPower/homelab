@@ -4,6 +4,29 @@
   "ignorePaths": ["observer/**"],
   "packageRules": [
     {
+      "description": "Give third-party releases time to be yanked before they reach the server",
+      "matchDatasources": ["docker"],
+      "matchUpdateTypes": ["major", "minor", "patch"],
+      "minimumReleaseAge": "3 days"
+    },
+    {
+      "description": "Merged changes deploy automatically, so only automerge low-risk updates",
+      "matchUpdateTypes": ["patch", "digest", "pin", "pinDigest"],
+      "automerge": true,
+      "ignoreTests": true
+    },
+    {
+      "description": "Apps that run database migrations or are databases get reviewed by hand",
+      "matchPackageNames": [
+        "ghcr.io/immich-app/*",
+        "ghcr.io/paperless-ngx/paperless-ngx",
+        "docker.io/library/mariadb",
+        "postgres",
+        "docker.io/rommapp/romm"
+      ],
+      "automerge": false
+    },
+    {
       "description": "linuxserver tags look like 4.0.19.2979-ls320",
       "matchDatasources": ["docker"],
       "matchPackageNames": [

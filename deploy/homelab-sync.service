@@ -1,0 +1,8 @@
+[Unit]
+Description=Sync homelab repo and redeploy changed compose apps
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=%h/applications/deploy/sync.sh
