@@ -1,0 +1,3 @@
+SELECT 'CREATE ROLE libby LOGIN' WHERE NOT EXISTS (SELECT FROM pg_roles WHERE rolname = 'libby') \gexec
+ALTER ROLE libby PASSWORD :'pw' CONNECTION LIMIT 50;
+SELECT 'CREATE DATABASE libby OWNER libby' WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = 'libby') \gexec

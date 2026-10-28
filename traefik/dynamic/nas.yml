@@ -1,0 +1,33 @@
+http:
+  routers:
+    nas:
+      rule: Host(`nas.bit.vet`)
+      entryPoints:
+        - websecure
+      tls:
+        certResolver: porkbun
+      middlewares:
+        - private-only
+      service: nas-dashboard
+
+  services:
+    nas-dashboard:
+      loadBalancer:
+        serversTransport: qnap
+        servers:
+          - url: https://192.168.0.60
+
+  serversTransports:
+    # The QNAP's built-in cert is self-signed with no SAN, which Go refuses to
+    # verify. Only this LAN hop is unverified; clients get a real cert.
+    qnap:
+      insecureSkipVerify: true
+
+  middlewares:
+    private-only:
+      ipAllowList:
+        sourceRange:
+          - 192.168.0.0/16
+          - 172.16.0.0/12
+          - 100.64.0.0/10
+          - 127.0.0.1/32

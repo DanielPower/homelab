@@ -4,6 +4,9 @@ services:
     image: ghcr.io/rainbow-sands/libby/db:main
     environment:
       DATABASE_URL: ${DATABASE_URL}
+    networks:
+      - default
+      - db
     restart: "no"
   discord:
     image: ghcr.io/rainbow-sands/libby/discord:main
@@ -22,6 +25,9 @@ services:
       S3_SECRET_ACCESS_KEY: ${S3_SECRET_ACCESS_KEY}
       S3_FORCE_PATH_STYLE: ${S3_FORCE_PATH_STYLE}
       WEB_URL: ${ORIGIN}
+    networks:
+      - default
+      - db
     restart: unless-stopped
   worker:
     image: ghcr.io/rainbow-sands/libby/worker:main
@@ -50,6 +56,9 @@ services:
       S3_ACCESS_KEY_ID: ${S3_ACCESS_KEY_ID}
       S3_SECRET_ACCESS_KEY: ${S3_SECRET_ACCESS_KEY}
       S3_FORCE_PATH_STYLE: ${S3_FORCE_PATH_STYLE}
+    networks:
+      - default
+      - db
     restart: unless-stopped
   web:
     image: ghcr.io/rainbow-sands/libby/web:main
@@ -85,6 +94,7 @@ services:
     networks:
       - default
       - proxy
+      - db
     restart: unless-stopped
   pg-boss-dashboard:
     image: node:24
@@ -98,6 +108,7 @@ services:
     networks:
       - default
       - proxy
+      - db
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.libby-pgboss.rule=Host(`libby-pgboss.bit.vet`)"
@@ -106,4 +117,6 @@ services:
       - "traefik.http.routers.libby-pgboss.middlewares=compression@file"
 networks:
   proxy:
+    external: true
+  db:
     external: true

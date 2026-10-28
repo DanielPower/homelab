@@ -1,0 +1,68 @@
+name: postgres
+services:
+  postgres:
+    build: .
+    image: local/postgres-pgbackrest
+    container_name: postgres
+    restart: unless-stopped
+    shm_size: 256mb
+    command:
+      - postgres
+      - -c
+      - wal_level=replica
+      - -c
+      - archive_mode=on
+      - -c
+      - archive_command=pgbackrest --stanza=main archive-push %p
+      - -c
+      - archive_timeout=60
+    environment: &env
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      LIBBY_DB_PASSWORD: ${LIBBY_DB_PASSWORD}
+      PAPERLESS_DB_PASSWORD: ${PAPERLESS_DB_PASSWORD}
+      PGBACKREST_REPO1_CIPHER_PASS: ${PGBACKREST_CIPHER_PASS}
+    volumes:
+      - data:/var/lib/postgresql
+      - socket:/var/run/postgresql
+      - backups:/backups
+      - ./init:/docker-entrypoint-initdb.d:ro
+      - ./apps:/apps:ro
+    healthcheck:
+      test: pg_isready -U postgres
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - db
+
+  pgbackrest:
+    image: local/postgres-pgbackrest
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    user: postgres
+    entrypoint: ["/usr/local/bin/backup.sh"]
+    environment:
+      <<: *env
+      HEALTHCHECK_URL: ${HEALTHCHECK_URL:-}
+      BACKUP_HOUR: ${BACKUP_HOUR:-3}
+      TZ: ${TZ:-America/St_Johns}
+    volumes:
+      - data:/var/lib/postgresql
+      - socket:/var/run/postgresql
+      - backups:/backups
+
+volumes:
+  # Local NVMe on purpose: keep Postgres off NFS.
+  data:
+  socket:
+  backups:
+    driver_opts:
+      type: "nfs"
+      device: ":/main/lab/postgres-backup"
+      o: "addr=192.168.0.60,vers=4,rw"
+
+networks:
+  db:
+    name: db
