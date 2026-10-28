@@ -1,6 +1,6 @@
 services:
   personal-site:
-    image: ghcr.io/danielpower/personal-site:main@sha256:89faae6d74d5c47bc6442167677dfaa5921eb2357b6d94182b985dc94d150cfa
+    image: ghcr.io/danielpower/personal-site:main@sha256:b7e9fde3e6e4025d37a837898d9e405b8e552471b6726e518368fefc91e93560
     container_name: personal-site
     labels:
       - "traefik.enable=true"
