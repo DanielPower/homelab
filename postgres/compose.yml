@@ -37,6 +37,8 @@ services:
 
   pgbackrest:
     image: local/postgres-pgbackrest
+    # Built by the postgres service above; never exists in a registry.
+    pull_policy: never
     restart: unless-stopped
     depends_on:
       postgres:
