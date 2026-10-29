@@ -97,7 +97,7 @@ services:
       - db
     restart: unless-stopped
   pg-boss-dashboard:
-    image: docker.io/library/node:24.22.1@sha256:d862bb5d082c5ae0210ac07e8c0344cb8cf7bef6d78e9b8c50c179da923108ea
+    image: docker.io/library/node:26.12.0@sha256:45a2bf9d9300e9cf47ecb375e38447c140c45ef5fbae869c430475b05b98d86e
     ports:
       - 3000
     working_dir: /app
