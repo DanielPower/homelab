@@ -15,7 +15,7 @@ services:
             - "traefik.http.routers.sonarr.entrypoints=websecure"
             - "traefik.http.routers.sonarr.tls.certresolver=porkbun"
     radarr:
-        image: docker.io/linuxserver/radarr:6.3.0.10514-ls313@sha256:a45b5ab0f850f39edb4cc9c95bbd967b52ddc3d4574a4dfb45561177db6c88f4
+        image: docker.io/linuxserver/radarr:6.4.4.10685-ls324@sha256:084b3b2ab1d0ef930660727259546a241f2bdf67c9ed085d54bf1486a6887c9b
         container_name: radarr
         restart: unless-stopped
         volumes:
