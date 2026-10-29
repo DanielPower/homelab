@@ -30,7 +30,7 @@ services:
             - "traefik.http.routers.radarr.entrypoints=websecure"
             - "traefik.http.routers.radarr.tls.certresolver=porkbun"
     prowlarr:
-        image: docker.io/linuxserver/prowlarr:2.5.2.5491-ls156@sha256:1295cff29d10b486c0d8324d1559a552140a5932bf8b3d87e398654414f63f92
+        image: docker.io/linuxserver/prowlarr:2.6.5.5623-ls165@sha256:b3b00047ed20f6ce2b16780145cb6a0acb51c9e28ea6aa6f5dcd33c7034f1797
         container_name: prowlarr
         restart: unless-stopped
         volumes:
