@@ -58,7 +58,12 @@ done
 
 echo "==> loading into live server as '$new' (owner $owner)"
 psql_live -c "create database \"$new\" owner \"$owner\""
-docker exec "$scratch" pg_dump -U postgres -Fc --no-acl "$db" \
+# The restore runs as the app role, which can't create untrusted extensions
+# like pgvector. Create them here as superuser and leave them out of the dump.
+for ext in $(docker exec "$scratch" psql -U postgres -d "$db" -Atqc "select extname from pg_extension where extname <> 'plpgsql'"); do
+    psql_live -d "$new" -c "create extension if not exists \"$ext\""
+done
+docker exec "$scratch" pg_dump -U postgres -Fc --no-acl --exclude-extension='*' "$db" \
     | docker exec -i postgres pg_restore -U postgres -d "$new" --no-owner --role="$owner" --no-acl --exit-on-error
 
 echo "==> done: '$new' is on the live server. See README.md to swap it in or drop it."
