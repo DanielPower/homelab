@@ -11,6 +11,7 @@ services:
     restart: unless-stopped
     networks:
       - proxy
+      - db
     environment:
       OSU_CLIENT_ID: ${OSU_CLIENT_ID}
       OSU_CLIENT_SECRET: ${OSU_CLIENT_SECRET}
@@ -30,4 +31,6 @@ services:
       FRONTEND_URL: "https://osu.observer"
 networks:
   proxy:
+    external: true
+  db:
     external: true
