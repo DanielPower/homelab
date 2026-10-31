@@ -1,0 +1,48 @@
+services:
+  document:
+    image: ghcr.io/danielpower/document:latest@sha256:d24456b2e8ceb088568abe690965764df3ff8134ff1445bc186f4ccf429796f4
+    container_name: document
+    restart: unless-stopped
+    environment:
+      # Role and database come from postgres/apps/docket.sql.
+      DATABASE_URL: postgresql://docket:${DOCKET_DB_PASSWORD}@postgres:5432/docket
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
+      AI_MODEL: claude-haiku-5-5
+      # Qwen3-Embedding-4B in llama-swap (always-on group), over the proxy network.
+      EMBEDDING_URL: http://llama-swap:8080/v1
+      EMBEDDING_MODEL: qwen3-embedding-4b
+    volumes:
+      - data:/data
+      - consume:/consume
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=proxy"
+      - "traefik.http.routers.document.rule=Host(`docs.bit.vet`)"
+      - "traefik.http.routers.document.entrypoints=websecure"
+      - "traefik.http.routers.document.tls.certresolver=porkbun"
+      # Docket has no login of its own. Traefik routes by Host header, so this
+      # also refuses requests that reach the public IP with Host: docs.bit.vet.
+      - "traefik.http.routers.document.middlewares=private-only@file,compression@file"
+    networks:
+      - proxy
+      - db
+
+volumes:
+  # Originals, searchable PDFs and thumbnails.
+  data:
+    driver_opts:
+      type: "nfs"
+      device: ":/main/lab/document/data"
+      o: "addr=192.168.0.60,vers=4,rw"
+  # Drop folder: files here are ingested, then deleted.
+  consume:
+    driver_opts:
+      type: "nfs"
+      device: ":/main/lab/document/consume"
+      o: "addr=192.168.0.60,vers=4,rw"
+
+networks:
+  proxy:
+    external: true
+  db:
+    external: true
