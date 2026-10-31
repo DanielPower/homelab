@@ -24,6 +24,7 @@ services:
             - "traefik.http.routers.paperless.rule=Host(`paperless.bit.vet`)"
             - "traefik.http.routers.paperless.entrypoints=websecure"
             - "traefik.http.routers.paperless.tls.certresolver=porkbun"
+            - "traefik.http.routers.paperless.middlewares=private-only@file"
         networks:
             - proxy
             - default
