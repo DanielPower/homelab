@@ -18,6 +18,7 @@ services:
             - "traefik.http.routers.llm.rule=Host(`llm.bit.vet`)"
             - "traefik.http.routers.llm.entrypoints=websecure"
             - "traefik.http.routers.llm.tls.certresolver=porkbun"
+            - "traefik.http.routers.llm.middlewares=private-only@file"
         networks:
             - proxy
 networks:

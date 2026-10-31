@@ -114,7 +114,7 @@ services:
       - "traefik.http.routers.libby-pgboss.rule=Host(`libby-pgboss.bit.vet`)"
       - "traefik.http.routers.libby-pgboss.entrypoints=websecure"
       - "traefik.http.routers.libby-pgboss.tls.certresolver=porkbun"
-      - "traefik.http.routers.libby-pgboss.middlewares=compression@file"
+      - "traefik.http.routers.libby-pgboss.middlewares=private-only@file,compression@file"
 networks:
   proxy:
     external: true

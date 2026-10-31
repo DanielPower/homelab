@@ -24,6 +24,7 @@ services:
             - "traefik.http.routers.qbittorrent.rule=Host(`qbittorrent.bit.vet`)"
             - "traefik.http.routers.qbittorrent.entrypoints=websecure"
             - "traefik.http.routers.qbittorrent.tls.certresolver=porkbun"
+            - "traefik.http.routers.qbittorrent.middlewares=private-only@file"
             - "traefik.http.services.qbittorrent.loadbalancer.server.port=8085"
         networks:
             - proxy

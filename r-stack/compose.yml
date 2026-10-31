@@ -14,6 +14,7 @@ services:
             - "traefik.http.routers.sonarr.rule=Host(`sonarr.bit.vet`)"
             - "traefik.http.routers.sonarr.entrypoints=websecure"
             - "traefik.http.routers.sonarr.tls.certresolver=porkbun"
+            - "traefik.http.routers.sonarr.middlewares=private-only@file"
     radarr:
         image: docker.io/linuxserver/radarr:6.4.4.10685-ls324@sha256:084b3b2ab1d0ef930660727259546a241f2bdf67c9ed085d54bf1486a6887c9b
         container_name: radarr
@@ -29,6 +30,7 @@ services:
             - "traefik.http.routers.radarr.rule=Host(`radarr.bit.vet`)"
             - "traefik.http.routers.radarr.entrypoints=websecure"
             - "traefik.http.routers.radarr.tls.certresolver=porkbun"
+            - "traefik.http.routers.radarr.middlewares=private-only@file"
     prowlarr:
         image: docker.io/linuxserver/prowlarr:2.7.0.5723-ls166@sha256:04be30163fbaf48d6aeee7b5893c9f6614ffbad6d853971df0d6dcdf01c7f104
         container_name: prowlarr
@@ -42,6 +44,7 @@ services:
             - "traefik.http.routers.prowlarr.rule=Host(`prowlarr.bit.vet`)"
             - "traefik.http.routers.prowlarr.entrypoints=websecure"
             - "traefik.http.routers.prowlarr.tls.certresolver=porkbun"
+            - "traefik.http.routers.prowlarr.middlewares=private-only@file"
     flaresolverr:
         image: ghcr.io/flaresolverr/flaresolverr:v3.5.0@sha256:139dfee1c6f89249c8d665d1333a42e8ec74ec0a86bc6bb1c8461e10d3a66a47
         container_name: flaresolverr

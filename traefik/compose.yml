@@ -13,6 +13,7 @@ services:
             - "traefik.http.routers.traefik.entrypoints=websecure"
             - "traefik.http.routers.traefik.tls.certresolver=porkbun"
             - "traefik.http.routers.traefik.service=api@internal"
+            - "traefik.http.routers.traefik.middlewares=private-only@file"
         ports:
             - "80:80"
             - "443:443"
