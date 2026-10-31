@@ -1,6 +1,6 @@
 services:
   document:
-    image: ghcr.io/danielpower/document:latest@sha256:fbdd74307e0e0bca16ecb0f41cd855689d813f4589ead2d4b2ba6c751e287504
+    image: ghcr.io/danielpower/document:latest@sha256:783213992df563a011927002bfd188bb1358c57f6850626b6e25ef417b3fe398
     container_name: document
     restart: unless-stopped
     environment:
