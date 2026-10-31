@@ -36,6 +36,7 @@ services:
         condition: service_completed_successfully
     environment:
       TRANSCRIPTION_URL: ${TRANSCRIPTION_URL}
+      DIARIZATION_URL: http://diarize:8000
       DISCORD_TOKEN: ${DISCORD_TOKEN}
       WEB_URL: ${ORIGIN}
       TRANSCRIPTION_MODEL: ${TRANSCRIPTION_MODEL}
@@ -96,6 +97,20 @@ services:
       - proxy
       - db
     restart: unless-stopped
+  # Speaker detection for single-microphone uploads (pyannote). CPU for now;
+  # the model is gated, so HF_TOKEN must belong to an account that accepted
+  # the terms of pyannote/speaker-diarization-community-1. Renovate pins the
+  # digest after the first image build.
+  diarize:
+    image: ghcr.io/rainbow-sands/libby/diarize:main
+    environment:
+      HF_TOKEN: ${HF_TOKEN}
+      DIARIZATION_DEVICE: cpu
+    volumes:
+      - diarize-models:/models
+    networks:
+      - default
+    restart: unless-stopped
   pg-boss-dashboard:
     image: docker.io/library/node:26.12.0@sha256:45a2bf9d9300e9cf47ecb375e38447c140c45ef5fbae869c430475b05b98d86e
     ports:
@@ -115,6 +130,8 @@ services:
       - "traefik.http.routers.libby-pgboss.entrypoints=websecure"
       - "traefik.http.routers.libby-pgboss.tls.certresolver=porkbun"
       - "traefik.http.routers.libby-pgboss.middlewares=compression@file"
+volumes:
+  diarize-models:
 networks:
   proxy:
     external: true
