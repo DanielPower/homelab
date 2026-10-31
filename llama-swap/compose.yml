@@ -3,7 +3,7 @@ services:
         image: ghcr.io/mostlygeek/llama-swap:unified-vulkan-2026-10-01@sha256:11a41d7523f752725115acfe6292f7dfe2edeb3fa833ce327aba39dff29d7a59
         container_name: llama-swap
         restart: unless-stopped
-        command: ["--config", "/app/config.yaml", "--listen", "0.0.0.0:8080"]
+        command: ["--config", "/app/config.yaml", "--listen", "0.0.0.0:8080", "--watch-config"]
         ports:
             - "9292:8080"
         devices:

@@ -51,6 +51,21 @@ models:
       --suppress-nst
       --no-language-probabilities
     ttl: 600
+  # Embeddings for Docket's semantic search (OpenAI-compatible /v1/embeddings).
+  # Small enough to keep loaded next to everything else; see the always-on group.
+  qwen3-embedding-0.6b:
+    cmd: |
+      llama-server
+      --port ${PORT}
+      --host 0.0.0.0
+      --model /models/Qwen3-Embedding-0.6B-Q8_0.gguf
+      --embedding
+      --pooling last
+      --ctx-size 8192
+      --batch-size 2048
+      --ubatch-size 2048
+      --n-gpu-layers 999
+    ttl: 0
 groups:
   "always-on":
     persistent: true
@@ -61,3 +76,4 @@ groups:
       # - "qwen3.6-35b-a3b"
       - "qwen3.8-125b-a6b"
       - "whisper-v3-large"
+      - "qwen3-embedding-0.6b"
