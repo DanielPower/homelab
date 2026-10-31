@@ -2,7 +2,7 @@
 
 One Postgres 18 server for every app that works with stock Postgres. Each app gets its own role and database. Data lives on local NVMe. pgBackRest sends WAL continuously and takes nightly backups (full on Sundays, diff otherwise) to the QNAP at `main/lab/postgres-backup`. The QNAP copies that folder to Backblaze. See `RESTORE.md` for restores.
 
-Apps that need a special Postgres build or extensions (e.g. Immich and VectorChord) keep their own server.
+The image includes pgvector. Extensions like it aren't "trusted", so an app can't enable one itself: enable it in the app's `apps/<name>.sql`, which runs as superuser (see `apps/docket.sql`). Apps that need a special Postgres build or other extensions (e.g. Immich and VectorChord) keep their own server.
 
 ## Adding an app
 
