@@ -6,6 +6,10 @@ services:
       DISCORD_TOKEN: ${DISCORD_TOKEN}
       DISCORD_APPLICATION_ID: ${DISCORD_APPLICATION_ID}
       CORN_CZAR_ID: ${CORN_CZAR_ID}
+      # Market news articles, written by llama-swap over the proxy network.
+      NEWS_LLM_URL: http://llama-swap:8080/v1
+      NEWS_LLM_MODEL: qwen3.6-35b-a3b
+      MARKET_NEWS_CHANNEL_ID: ${MARKET_NEWS_CHANNEL_ID}
     expose:
       - 3000
     labels:
