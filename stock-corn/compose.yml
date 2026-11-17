@@ -1,6 +1,6 @@
 services:
   stock-corn:
-    image: ghcr.io/danielpower/stock-corn:master@sha256:868610e1be93975a778e636245c045e74153c1236917d38cfbe3144e9b56b9f9
+    image: ghcr.io/danielpower/stock-corn:master@sha256:cb8bd62cf81249e1d4d0ce71bc6c578c96e3b2f861ed2002dd0b5252457d9be9
     environment:
       DATABASE_PATH: /data/db.sqlite
       DISCORD_TOKEN: ${DISCORD_TOKEN}
