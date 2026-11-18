@@ -1,4 +1,4 @@
-FROM postgres:18.6@sha256:3a4264520e121176619f54ff867d12774bc81e95e7b84db58d63bccdb6144b81
+FROM postgres:18.7@sha256:2ea8630df176ad090ec92136dee850397c5af8781e4bcf2e4162593691c61bbc
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends pgbackrest curl ca-certificates postgresql-18-pgvector \
