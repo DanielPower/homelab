@@ -31,6 +31,9 @@ services:
       - "traefik.http.routers.document.rule=Host(`docs.bit.vet`)"
       - "traefik.http.routers.document.entrypoints=websecure"
       - "traefik.http.routers.document.tls.certresolver=porkbun"
+      # The image also exposes FTP ports (2121, 30000-30009); without this
+      # Traefik picks the lowest one and sends web requests to the FTP server.
+      - "traefik.http.services.document.loadbalancer.server.port=8080"
       # Docket has no login of its own. Traefik routes by Host header, so this
       # also refuses requests that reach the public IP with Host: docs.bit.vet.
       - "traefik.http.routers.document.middlewares=private-only@file,compression@file"
