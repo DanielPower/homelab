@@ -35,11 +35,13 @@ volumes:
       device: ":/main/lab/document/data"
       o: "addr=192.168.0.60,vers=4,rw"
   # Drop folder: files here are ingested, then deleted.
+  # actimeo=1: Docket scans this folder every second, and the default NFS
+  # attribute cache (up to 60s for directories) would hide new scans.
   consume:
     driver_opts:
       type: "nfs"
       device: ":/main/lab/document/consume"
-      o: "addr=192.168.0.60,vers=4,rw"
+      o: "addr=192.168.0.60,vers=4,rw,actimeo=1"
 
 networks:
   proxy:
