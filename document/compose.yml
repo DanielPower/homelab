@@ -1,6 +1,6 @@
 services:
   document:
-    image: ghcr.io/danielpower/document:latest@sha256:f08c729eca9ae3347acb457f64e1b9a395b51790b4aecfbb47c44ce70765c790
+    image: ghcr.io/danielpower/document:latest@sha256:dfa09543d74911f18ed09c83fd6a4ce016bc372e4a210bb4455574adf5c05abb
     container_name: document
     restart: unless-stopped
     environment:
@@ -31,8 +31,8 @@ services:
       - "traefik.http.routers.document.rule=Host(`docs.bit.vet`)"
       - "traefik.http.routers.document.entrypoints=websecure"
       - "traefik.http.routers.document.tls.certresolver=porkbun"
-      # The image also exposes FTP ports (2121, 30000-30009); without this
-      # Traefik picks the lowest one and sends web requests to the FTP server.
+      # The container also listens for FTP (2121, 30000-30009); pin Traefik to
+      # the web port so it never picks one of those.
       - "traefik.http.services.document.loadbalancer.server.port=8080"
       # Docket has no login of its own. Traefik routes by Host header, so this
       # also refuses requests that reach the public IP with Host: docs.bit.vet.
