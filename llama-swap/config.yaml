@@ -1,5 +1,13 @@
 healthCheckTimeout: 300
 
+# Speed notes (Strix Halo, Vulkan): decode is memory-bandwidth bound, so the
+# Qwen models use MTP speculative decoding via the draft head built into the
+# GGUF (blk.*.nextn.* tensors). If a quant lacks those tensors, draft-mtp
+# silently does nothing; check with: strings -n 8 model.gguf | grep -m1 nextn
+# MTP lowers total throughput with 3+ concurrent requests, hence --parallel 1.
+# Keep --spec-draft-n-max at 2-3; 4 is slower on Vulkan (llama.cpp #30568).
+# KV cache stays f16: quantized KV was reported to break tool calling.
+
 models:
   qwen3.8-27b:
     cmd: |
@@ -10,6 +18,13 @@ models:
       --ctx-size 131072
       --n-gpu-layers 999
       --flash-attn on
+      --no-mmap
+      --spec-type draft-mtp,ngram-mod
+      --spec-draft-n-max 2
+      --cache-ram 8192
+      --ctx-checkpoints 8
+      --parallel 1
+      --jinja
     ttl: 600
   qwen3.6-35b-a3b:
     cmd: |
@@ -17,9 +32,16 @@ models:
       --port ${PORT}
       --host 0.0.0.0
       --model /models/Qwen3.6-35B-A3B-UD-Q4_K_XL.gguf
-      --ctx-size 32768
+      --ctx-size 131072
       --n-gpu-layers 999
       --flash-attn on
+      --no-mmap
+      --spec-type draft-mtp,ngram-mod
+      --spec-draft-n-max 2
+      --cache-ram 8192
+      --ctx-checkpoints 32
+      --parallel 1
+      --jinja
     ttl: 600
   qwen3.8-125b-a6b:
     cmd: |
@@ -27,8 +49,16 @@ models:
       --port ${PORT}
       --host 0.0.0.0
       --model /models/Qwen3.8-Flash-Next-UD-IQ4_XS-00001-of-00003.gguf
+      --ctx-size 131072
       --n-gpu-layers 999
       --flash-attn on
+      --no-mmap
+      --spec-type draft-mtp
+      --spec-draft-n-max 3
+      --spec-draft-p-min 0.0
+      --batch-size 2048
+      --ubatch-size 2048
+      --jinja
     ttl: 600
   whisper-v3-large:
     proxy: http://127.0.0.1:${PORT}
