@@ -42,7 +42,7 @@ services:
             PAPERLESS_SECRET_KEY: ${PAPERLESS_SECRET_KEY}
             PAPERLESS_TIME_ZONE: "America/St_Johns"
     gotenberg:
-        image: docker.io/gotenberg/gotenberg:9.0.0@sha256:01144a5c897a21b966f1abb9836d2f3bac1e3c8196087bab73f697878345638a
+        image: docker.io/gotenberg/gotenberg:9.10.1@sha256:7d04e465cc8f700871092c2871c04f1e70d86eb399c9887cbd86a4a809e873ce
         restart: unless-stopped
         # The gotenberg chromium route is used to convert .eml files. We do not
         # want to allow external content like tracking pixels or even javascript.
